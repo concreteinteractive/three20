@@ -169,7 +169,7 @@
 
   [_tabViews removeAllObjects];
 
-  if (_selectedTabIndex >= _tabViews.count) {
+  if (_selectedTabIndex >= _tabItems.count) {
     _selectedTabIndex = 0;
   }
 

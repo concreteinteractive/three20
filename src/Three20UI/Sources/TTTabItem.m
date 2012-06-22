@@ -30,6 +30,14 @@
 @synthesize object      = _object;
 @synthesize badgeNumber = _badgeNumber;
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (id)initWithImage:(NSString*)image {
+	self = [self init];
+    if (self) {
+        self.icon = image;
+    }
+    return self;
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (id)initWithTitle:(NSString*)title {
@@ -37,7 +45,6 @@
   if (self) {
     self.title = title;
   }
-
   return self;
 }
 

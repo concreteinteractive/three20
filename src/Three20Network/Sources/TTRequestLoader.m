@@ -107,7 +107,7 @@ static const NSInteger kLoadMaxRetries = 2;
     // Skip for now.
 	_responseData = [[NSMutableData dataWithData:[[dataSplit objectAtIndex:1] dataUsingEncoding:NSASCIIStringEncoding]] retain];
   } else {
-    _responseData = [[NSData dataWithBase64EncodedString:[dataSplit objectAtIndex:1]] retain];
+    _responseData = [[NSMutableData dataWithData:[NSData dataWithBase64EncodedString:[dataSplit objectAtIndex:1]]] retain];
   }
 
   [_queue performSelector:@selector(loader:didLoadResponse:data:) 

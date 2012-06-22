@@ -32,6 +32,7 @@
 @property (nonatomic)         int       badgeNumber;
 
 - (id)initWithTitle:(NSString*)title;
+- (id)initWithImage:(NSString*)image;
 
 @end
 
