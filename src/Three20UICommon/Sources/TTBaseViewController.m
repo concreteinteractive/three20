@@ -29,6 +29,173 @@
 #import "Three20Core/TTDebugFlags.h"
 
 
+// CIParentViewController is an abstract controller class that supports controller
+// nesting.  Such nesting is newly available in iOS5 but is not backwards compatible
+// so we implement it here.
+
+@interface CIParentViewController()
+@property (nonatomic, retain) NSMutableArray *childViewControllers;
+@end
+
+@implementation CIParentViewController
+
+@synthesize childViewControllers = _childViewControllers;
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+    if ((self = [super initWithNibName:nil bundle:nil])) {
+    }
+    return self;
+}
+
+#pragma mark -
+#pragma mark View management
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+                                duration:(NSTimeInterval)duration
+{
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    for (UIViewController *viewController in _childViewControllers) {
+        [viewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    for (UIViewController *viewController in _childViewControllers) {
+        [viewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+										 duration:(NSTimeInterval)duration
+{
+    [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    [self layoutSubviewsForInterfaceOrientation:toInterfaceOrientation];
+    for (UIViewController *viewController in _childViewControllers) {
+        [viewController willAnimateRotationToInterfaceOrientation:toInterfaceOrientation
+                                                         duration:duration];
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)willAnimateFirstHalfOfRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+                                                    duration:(NSTimeInterval)duration
+{
+    [super willAnimateFirstHalfOfRotationToInterfaceOrientation:toInterfaceOrientation
+                                                       duration:duration];
+    for (UIViewController *viewController in _childViewControllers) {
+        [viewController willAnimateFirstHalfOfRotationToInterfaceOrientation:toInterfaceOrientation
+                                                                    duration:duration];
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)didAnimateFirstHalfOfRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+{
+    [super didAnimateFirstHalfOfRotationToInterfaceOrientation:toInterfaceOrientation];
+    for (UIViewController *viewController in _childViewControllers) {
+        [viewController didAnimateFirstHalfOfRotationToInterfaceOrientation:toInterfaceOrientation];
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)willAnimateSecondHalfOfRotationFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+                                                       duration:(NSTimeInterval)duration
+{
+    [super willAnimateSecondHalfOfRotationFromInterfaceOrientation:fromInterfaceOrientation
+                                                          duration:duration];
+    for (UIViewController *viewController in _childViewControllers) {
+        [viewController willAnimateSecondHalfOfRotationFromInterfaceOrientation:fromInterfaceOrientation
+                                                                       duration:duration];
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    return YES;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)viewWillAppear:(BOOL)animated
+{
+	[super viewWillAppear:animated];
+    for (UIViewController *viewController in _childViewControllers) {
+        [viewController viewWillAppear:animated];
+    }
+    [self layoutSubviewsForInterfaceOrientation:[UIApplication sharedApplication].statusBarOrientation];
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)layoutSubviewsForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    for (UIViewController *viewController in _childViewControllers) {
+        if ([viewController respondsToSelector:@selector(layoutSubviewsForInterfaceOrientation:)]) {
+            [(CIParentViewController *)viewController layoutSubviewsForInterfaceOrientation:[UIApplication sharedApplication].statusBarOrientation];
+        }
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)viewDidAppear:(BOOL)animated
+{
+	[super viewDidAppear:animated];
+    for (UIViewController *viewController in _childViewControllers) {
+        [viewController viewDidAppear:animated];
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)viewWillDisappear:(BOOL)animated
+{
+	[super viewWillDisappear:animated];
+    for (UIViewController *viewController in _childViewControllers) {
+        [viewController viewWillDisappear:animated];
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)viewDidDisappear:(BOOL)animated
+{
+	[super viewDidDisappear:animated];
+    for (UIViewController *viewController in _childViewControllers) {
+        [viewController viewDidDisappear:animated];
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)dealloc {
+    [super dealloc];
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+-(CGRect) contentPaneFrameForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    if (UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
+        return CGRectMake(0, 0, LANDSCAPE_MAIN_WINDOW_WIDTH, LANDSCAPE_MAIN_WINDOW_HEIGHT);
+    }
+    else {
+        return CGRectMake(0, 0, PORTRAIT_MAIN_WINDOW_WIDTH, PORTRAIT_MAIN_WINDOW_HEIGHT);
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+-(void)loadView {
+    [super loadView];
+    self.childViewControllers = [[[NSMutableArray alloc] init] autorelease];
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (void) viewDidUnload {
+    self.childViewControllers = nil;
+    [super viewDidUnload];
+}
+
+@end
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////

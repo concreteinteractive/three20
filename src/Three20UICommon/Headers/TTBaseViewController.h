@@ -17,10 +17,36 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+
+// CIParentViewController is an abstract controller class that supports controller
+// nesting.  Such nesting is newly available in iOS5 but is not backwards compatible
+// so we implement it here.
+
+
+// We would like to dynamically measure these constants, using defines for now.
+
+#define LANDSCAPE_MAIN_WINDOW_WIDTH 845
+#define LANDSCAPE_MAIN_WINDOW_HEIGHT 655
+#define PORTRAIT_MAIN_WINDOW_WIDTH 599
+#define PORTRAIT_MAIN_WINDOW_HEIGHT 911
+#define GENRE_RADIO_BUTTON_WIDTH 160
+
+
+@interface CIParentViewController : UIViewController {
+    NSMutableArray *_childViewControllers;
+}
+- (void)layoutSubviewsForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
+- (CGRect) contentPaneFrameForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
+
+@property (nonatomic, retain, readonly) NSMutableArray *childViewControllers;
+
+@end
+
+
 /**
  * A view controller with some useful additions.
  */
-@interface TTBaseViewController : UIViewController {
+@interface TTBaseViewController : CIParentViewController {
 @protected
   NSDictionary*     _frozenState;
   UIBarStyle        _navigationBarStyle;

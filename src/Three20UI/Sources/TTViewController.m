@@ -85,16 +85,19 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)loadView {
-  if (nil != self.nibName) {
-    [super loadView];
+  // Changed for Rhapsody. Super needs to be called regardless of whether nibName is nil,
+  // because it sets up the childViewControllers array in a superclass.
+  [super loadView];
 
-  } else {
+  if (nil == self.nibName) {
     CGRect frame = self.wantsFullScreenLayout ? TTScreenBounds() : TTNavigationFrame();
     self.view = [[[UIView alloc] initWithFrame:frame] autorelease];
     self.view.autoresizesSubviews = YES;
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.view.backgroundColor = TTSTYLEVAR(backgroundColor);
   }
+  // For Rhapsody
+  self.navigationBarTintColor = TTSTYLEVAR(navigationBarTintColor);
 }
 
 
